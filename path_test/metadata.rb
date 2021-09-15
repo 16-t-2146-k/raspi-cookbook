@@ -1,0 +1,6 @@
+name 'path_test'
+description 'path_test cookbook'
+maintainer 'Shinta Funo'
+maintainer_email '20w2081d@shinshu-u.ac.jp'
+license 'All rights reserved'
+version '0.1.0'
