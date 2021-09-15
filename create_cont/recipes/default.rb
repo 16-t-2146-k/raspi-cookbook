@@ -19,7 +19,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
                     'id' => result['id'],
                     'uid' => result['uid'],
                     'cid' => result['cid'],
-                    'ip' => result['ip']
+                    'ip' => result['ip'],
                     'port' => result['port'],
                 }
                 databag_item.save
