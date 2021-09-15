@@ -22,6 +22,35 @@ directory "/tmp/chef" do
     not_if { File.exist?("/tmp/chef") }
 end
 
+#git "/home/ubuntu/rasapp" do
+#  repository "https://github.com/16-t-2146-k/rasapp.git"
+#  revision "main"
+#  user "ubuntu"
+#  group "ubuntu"
+#  action :sync
+#end
+
+directory '/home/ubuntu/rasapp/public/classes' do
+    owner 'ubuntu'
+    group 'ubuntu'
+    mode '0755'
+    action :create
+end
+
+directory '/home/ubuntu/rasapp/public/classes/contents' do
+    owner 'ubuntu'
+    group 'ubuntu'
+    mode '0755'
+    action :create
+end
+
+directory '/home/ubuntu/rasapp/public/classes/images' do
+    owner 'ubuntu'
+    group 'ubuntu'
+    mode '0755'
+    action :create
+end
+
 template "/tmp/chef/lxd_init.txt" do
     source "lxd_init.erb"
     action :create
