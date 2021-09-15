@@ -85,27 +85,6 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         code "/snap/bin/lxc start #{result['cid']}-#{result['uid']}"
     end
 
-    directory '/home/ubuntu/rasapp/public/classes' do
-        owner 'ubuntu'
-        group 'ubuntu'
-        mode '0755'
-        action :create
-    end
-
-    directory '/home/ubuntu/rasapp/public/classes/contents' do
-        owner 'ubuntu'
-        group 'ubuntu'
-        mode '0755'
-        action :create
-    end
-
-    directory '/home/ubuntu/rasapp/public/classes/images' do
-        owner 'ubuntu'
-        group 'ubuntu'
-        mode '0755'
-        action :create
-    end
-
     file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
         content "{\"ip\":#{result['ip']},\"port\":\"#{result['port']}\"}"
         mode '0755'
