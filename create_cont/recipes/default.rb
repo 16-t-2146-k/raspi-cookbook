@@ -26,7 +26,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
 
             end
         end
-        notifies :run, "ruby_block [set #{server_data['cid']} databag items]", :delay
+        notifies :run, "ruby_block [set #{server_data['cid']} databag items]", :delayed
     end
 
     ruby_block "check container #{result['cid']}-#{result['uid']}" do
