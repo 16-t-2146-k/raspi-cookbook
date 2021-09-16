@@ -2,31 +2,25 @@ server_data = data_bag_item('server', node[:hostname])
 
 search(:classes, "uid:#{node[:hostname]}").each do |result|
 
-    ruby_block "set port #{result['cid']}-#{result['uid']} databag items" do
-        block do
-            if result['port'] == '' then
-                _port = server_data['port'].shift
-                server_data['used_port'].push(_port)
-                result['port'] = _port
+    if result['port'] == '' then
+        _port = server_data['port'].shift
+        server_data['used_port'].push(_port)
+        result['port'] = _port
 
-                _ip = server_data['ip'].shift
-                server_data['used_ip'].push(_ip)
-                result['ip'] = _ip                
+        _ip = server_data['ip'].shift
+        server_data['used_ip'].push(_ip)
+        result['ip'] = _ip                
 
-                databag_item = Chef::DataBagItem.new
-                databag_item.data_bag('classes')
-                databag_item.raw_data = {
-                    'id' => result['id'],
-                    'uid' => result['uid'],
-                    'cid' => result['cid'],
-                    'ip' => result['ip'],
-                    'port' => result['port'],
-                }
-                databag_item.save
-
-            end
-        end
-        notifies :run, "ruby_block[set #{server_data['hostname']} databag items]", :delayed
+        databag_item = Chef::DataBagItem.new
+        databag_item.data_bag('classes')
+        databag_item.raw_data = {
+            'id' => result['id'],
+            'uid' => result['uid'],
+            'cid' => result['cid'],
+            'ip' => result['ip'],
+            'port' => result['port'],
+        }
+        databag_item.save
     end
 
     ruby_block "check container #{result['cid']}-#{result['uid']}" do
