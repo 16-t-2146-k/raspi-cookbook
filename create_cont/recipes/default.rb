@@ -102,7 +102,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 end
 
-ruby_block "set #{result['cid']} databag items" do
+ruby_block "set #{server_data['cid']} databag items" do
     block do
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('server')
