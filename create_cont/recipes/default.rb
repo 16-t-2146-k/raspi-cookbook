@@ -26,7 +26,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
 
             end
         end
-        notifies :run, "ruby_block [set #{server_data['cid']} databag items]", :delayed
+        notifies :run, "ruby_block [set #{server_data['hostname']} databag items]", :delayed
     end
 
     ruby_block "check container #{result['cid']}-#{result['uid']}" do
@@ -103,14 +103,13 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 end
 
-ruby_block "set #{server_data['cid']} databag items" do
+ruby_block "set #{server_data['hostname']} databag items" do
     block do
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('server')
         databag_item.raw_data = {
             'id' => server_data['id'],
-            'uid' => server_data['uid'],
-            'cid' => server_data['cid'],
+            'hostname' => server_data['hostname'],
             'ip' => server_data['ip'],
             'used_ip' => server_data['used_ip'],
             'port' => server_data['port'],
