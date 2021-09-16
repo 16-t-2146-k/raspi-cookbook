@@ -6,10 +6,12 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         _port = server_data['port'].shift
         server_data['used_port'].push(_port)
         result['port'] = _port
+        p _port
 
         _ip = server_data['ip'].shift
         server_data['used_ip'].push(_ip)
-        result['ip'] = _ip                
+        result['ip'] = _ip        
+        p _ip
 
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('classes')
@@ -81,7 +83,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 
     file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
-        content lazy{"{\"ip\":#{result['ip']},\"port\":\"#{result['port']}\"}"}
+        content lazy{"{\"ip\":\"#{result['ip']}\",\"port\":\"#{result['port']}\"}"}
         mode '0755'
         owner 'ubuntu'
         group 'ubuntu'
@@ -111,5 +113,5 @@ ruby_block "set #{server_data['hostname']} databag items" do
         }
         databag_item.save
     end
-    action :nothing
+    action :run
 end
