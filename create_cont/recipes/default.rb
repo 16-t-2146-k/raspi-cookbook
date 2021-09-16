@@ -11,7 +11,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
 
                 _ip = server_data['ip'].shift
                 server_data['used_ip'].push(_ip)
-                result['ip'] = _port                
+                result['ip'] = _ip                
 
                 databag_item = Chef::DataBagItem.new
                 databag_item.data_bag('classes')
