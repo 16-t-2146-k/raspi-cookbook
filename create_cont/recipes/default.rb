@@ -57,7 +57,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         cwd '/home/ubuntu'
         action :nothing
         notifies :run, "bash[lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1]", :immediately
-        code "/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:#{result['ip']}:80 bind=host"
+        code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:#{result['ip']}:80 bind=host"}
     end
 
     bash "lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1" do
@@ -65,17 +65,17 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         group 'lxd'
         cwd '/home/ubuntu'
         action :nothing
-        notifies :run, "bash[lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}]", :immediately
+        notifies :run, "bash[lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address]", :immediately
         code "/snap/bin/lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1"
     end
 
-    bash "lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}" do
+    bash "lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address" do
         user 'ubuntu'
         group 'lxd'
         cwd '/home/ubuntu'
         action :nothing
         notifies :run, "bash[lxc start #{result['cid']}-#{result['uid']}]", :immediately
-        code "/snap/bin/lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}"
+        code lazy{"/snap/bin/lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}"}
     end
 
     bash "lxc start #{result['cid']}-#{result['uid']}" do
@@ -87,15 +87,15 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 
     file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
-        content "{\"ip\":#{result['ip']},\"port\":\"#{result['port']}\"}"
+        content lazy{"{\"ip\":#{result['ip']},\"port\":\"#{result['port']}\"}"}
         mode '0755'
         owner 'ubuntu'
         group 'ubuntu'
         action :create
     end
 
-    remote_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
-        source "file:///home/vagrant/images/#{result['cid']}.png"
+    cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
+        source "#{result['cid']}.png"
         owner 'ubuntu'
         group 'ubuntu'
         mode '0755'
