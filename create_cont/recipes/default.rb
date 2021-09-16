@@ -4,7 +4,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
 
     ruby_block "set port #{result['cid']}-#{result['uid']} databag items" do
         block do
-            if result['port'].empty? then
+            if result['port'] == '' then
                 _port = server_data['port'].shift
                 server_data['used_port'].push(_port)
                 result['port'] = _port
