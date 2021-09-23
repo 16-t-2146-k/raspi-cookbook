@@ -53,7 +53,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         cwd '/home/ubuntu'
         action :nothing
         notifies :run, "bash[lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1]", :immediately
-        code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:#{result['ip']}:80 bind=host"}
+        code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:127.0.0.1:80 bind=host"}
     end
 
     bash "lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1" do
