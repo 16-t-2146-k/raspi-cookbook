@@ -56,15 +56,15 @@ template "/tmp/chef/lxd_init.txt" do
     action :create
 end
 
-template "/etc/netplan/70-eth1.yaml" do
-    source "70-eth1.erb"
-    action :create
-end
+#template "/etc/netplan/70-eth1.yaml" do
+#    source "70-eth1.erb"
+#    action :create
+#end
 
-template "/home/ubuntu/mydefault.yaml" do
-    source "mydefault.erb"
-    action :create
-end
+#template "/home/ubuntu/mydefault.yaml" do
+#    source "mydefault.erb"
+#    action :create
+#end
 
 bash 'snap install lxd' do
     user 'ubuntu'
@@ -94,10 +94,11 @@ bash "lxd remote add" do
     notifies :run, 'bash[lxc profile edit default]', :immediately
 end
 
-bash "lxc profile edit default" do
-    user 'ubuntu'
-    group 'lxd'
-    cwd '/home/ubuntu'
-    action :nothing
-    code "cat mydefault.yaml | /snap/bin/lxc profile edit default"
-end
+
+#bash "lxc profile edit default" do
+#    user 'ubuntu'
+#    group 'lxd'
+#    cwd '/home/ubuntu'
+#    action :nothing
+#    code "cat mydefault.yaml | /snap/bin/lxc profile edit default"
+#end

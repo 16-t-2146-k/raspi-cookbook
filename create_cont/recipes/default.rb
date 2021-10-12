@@ -8,10 +8,10 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         result['port'] = _port
         p _port
 
-        _ip = server_data['ip'].shift
-        server_data['used_ip'].push(_ip)
-        result['ip'] = _ip        
-        p _ip
+        #_ip = server_data['ip'].shift
+        #server_data['used_ip'].push(_ip)
+        #result['ip'] = _ip        
+        #p _ip
 
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('classes')
@@ -19,7 +19,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
             'id' => result['id'],
             'uid' => result['uid'],
             'cid' => result['cid'],
-            'ip' => result['ip'],
+            #'ip' => result['ip'],
             'port' => result['port'],
         }
         databag_item.save
@@ -56,23 +56,23 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:127.0.0.1:80 bind=host"}
     end
 
-    bash "lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1" do
-        user 'ubuntu'
-        group 'lxd'
-        cwd '/home/ubuntu'
-        action :nothing
-        notifies :run, "bash[lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address]", :immediately
-        code "/snap/bin/lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1"
-    end
+#    bash "lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1" do
+#        user 'ubuntu'
+#        group 'lxd'
+#        cwd '/home/ubuntu'
+#        action :nothing
+#        notifies :run, "bash[lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address]", :immediately
+#        code "/snap/bin/lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1"
+#    end
 
-    bash "lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address" do
-        user 'ubuntu'
-        group 'lxd'
-        cwd '/home/ubuntu'
-        action :nothing
-        notifies :run, "bash[lxc start #{result['cid']}-#{result['uid']}]", :immediately
-        code lazy{"/snap/bin/lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}"}
-    end
+#    bash "lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address" do
+#        user 'ubuntu'
+#        group 'lxd'
+#        cwd '/home/ubuntu'
+#        action :nothing
+#        notifies :run, "bash[lxc start #{result['cid']}-#{result['uid']}]", :immediately
+#        code lazy{"/snap/bin/lxc config device set #{result['cid']}-#{result['uid']} eth1 ipv4.address #{result['ip']}"}
+#    end
 
     bash "lxc start #{result['cid']}-#{result['uid']}" do
         user 'ubuntu'
@@ -83,7 +83,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 
     file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
-        content lazy{"{\"ip\":\"#{result['ip']}\",\"port\":\"#{result['port']}\"}"}
+        content lazy{"{\"ip\":\"\",\"port\":\"#{result['port']}\"}"}
         mode '0755'
         owner 'ubuntu'
         group 'ubuntu'
@@ -106,8 +106,8 @@ ruby_block "set #{server_data['hostname']} databag items" do
         databag_item.raw_data = {
             'id' => server_data['id'],
             'hostname' => server_data['hostname'],
-            'ip' => server_data['ip'],
-            'used_ip' => server_data['used_ip'],
+            #'ip' => server_data['ip'],
+            #'used_ip' => server_data['used_ip'],
             'port' => server_data['port'],
             'used_port' => server_data['used_port'],
         }
