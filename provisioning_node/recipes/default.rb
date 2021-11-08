@@ -62,6 +62,7 @@ template "/tmp/chef/lxd_init.txt" do
     action :create
 end
 
+#default profile以外を使用する場合
 #template "/etc/netplan/70-eth1.yaml" do
 #    source "70-eth1.erb"
 #    action :create
@@ -72,6 +73,7 @@ end
 #    action :create
 #end
 
+#snapで入れる場合パス通さないとダメかも
 bash 'snap install lxd' do
     user 'ubuntu'
     group 'root'
@@ -82,6 +84,7 @@ bash 'snap install lxd' do
     notifies :run, 'bash[lxd init]', :immediately
 end
 
+#userをlxdグループに入れないとroot以外は実行不可
 bash "lxd init" do
     user 'ubuntu'
     group 'lxd'
