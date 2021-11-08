@@ -8,6 +8,12 @@ apt_package 'lxc' do
     not_if 'which lxc'
 end
 
+apt_package 'snapd' do
+    action :install
+    options '-y'
+    not_if 'which snap'
+end
+
 apt_package 'jq' do
     action :install
     options '-y'

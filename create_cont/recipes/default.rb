@@ -2,6 +2,7 @@ server_data = data_bag_item('server', node[:hostname])
 
 search(:classes, "uid:#{node[:hostname]}").each do |result|
 
+    #空きポートをportに設定(databagの作成,更新)
     if result['port'] == '' then
         _port = server_data['port'].shift
         server_data['used_port'].push(_port)
@@ -56,6 +57,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
         code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:127.0.0.1:80 bind=host"}
     end
 
+#ipの固定をする場合に使用．lxdの設定のip_range内でip指定して．
 #    bash "lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1" do
 #        user 'ubuntu'
 #        group 'lxd'
@@ -99,6 +101,7 @@ search(:classes, "uid:#{node[:hostname]}").each do |result|
     end
 end
 
+#server databagの更新
 ruby_block "set #{server_data['hostname']} databag items" do
     block do
         databag_item = Chef::DataBagItem.new
