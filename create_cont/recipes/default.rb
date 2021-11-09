@@ -92,12 +92,12 @@ classes_data.each do |result|
             #cont = `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv`
             #Chef::Log.info cont
             #if cont == '' then
-            if launched_cont.include? "#{result['cid']}-#{result['uid']}" then
+            if !launched_cont.include? "#{result['cid']}-#{result['uid']}" then
                 p "no container"
             end
         end
         #if `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv` == '' then
-        if launched_cont.include? "#{result['cid']}-#{result['uid']}" then
+        if !launched_cont.include? "#{result['cid']}-#{result['uid']}" then
             notifies :run, "bash[lxc init #{result['cid']}-#{result['uid']}]", :immediately
         end
     end
