@@ -6,8 +6,8 @@ ruby_block "delete classes databag items" do
         #override_attributes
         Chef::Log.info node['delete_databag']['item']
         databag_item = Chef::DataBagItem.new
-        databag_item.data_bag('classes')
-        databag_item.delete(node['delete_databag']['item'])
+        databag_item.load('classes',node['delete_databag']['item'])
+        databag_item.delete()
     end
     action :run
 end
