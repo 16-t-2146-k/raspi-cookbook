@@ -7,7 +7,7 @@ ruby_block "delete classes databag items" do
         Chef::Log.info node['delete_databag']['item']
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('classes')
-        databag_item.delete(,node['delete_databag']['item'])
+        databag_item.delete('classes',node['delete_databag']['item'])
     end
     action :run
 end
