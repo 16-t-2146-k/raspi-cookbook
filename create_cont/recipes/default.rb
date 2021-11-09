@@ -1,6 +1,8 @@
 server_data = data_bag_item('server', node[:hostname])
+classes_data = search(:classes, "uid:#{node[:hostname]}")
 
-search(:classes, "uid:#{node[:hostname]}").each do |result|
+#search(:classes, "uid:#{node[:hostname]}").each do |result|
+classes_data.each do |result|
 
     #空きポートをportに設定(databagの作成,更新)
     if result['port'] == '' then
