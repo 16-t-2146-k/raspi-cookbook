@@ -1,13 +1,15 @@
 server_data = data_bag_item('server', node[:hostname])
 classes_data = search(:classes, "uid:#{node[:hostname]}")
+list_cont = []
 unlist_cont = []
 
 ruby_block "check unlist container" do
     block do
         `/snap/bin/lxc list -c n -f csv`.each_line{|line|
-            unlist_cont.push(line.chomp)
+            list_cont.push(line.chomp)
         }
-        Chef::Log.info "unlist_cont #{unlist_cont}"
+        Chef::Log.info "list_cont #{list_cont}"
+        Chef::Log.info "classes_data #{classes_data}"
     end
     action :run
 end
@@ -41,13 +43,15 @@ classes_data.each do |result|
 
     ruby_block "check container #{result['cid']}-#{result['uid']}" do
         block do
-            cont = `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv`
-            Chef::Log.info cont
-            if cont == '' then
+            #cont = `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv`
+            #Chef::Log.info cont
+            #if cont == '' then
+            if list_cont.include? "#{result['cid']}-#{result['uid']}" then
                 p "no container"
             end
         end
-        if `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv` == '' then
+        #if `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv` == '' then
+        if list_cont.include? "#{result['cid']}-#{result['uid']}" then
             notifies :run, "bash[lxc init #{result['cid']}-#{result['uid']}]", :immediately
         end
     end
