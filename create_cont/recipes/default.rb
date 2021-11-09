@@ -23,6 +23,40 @@ ruby_block "check unlist container" do
     action :run
 end
 
+#databagに記載のないコンテナの停止(/削除)
+unlist_cont.each do |result|
+
+    bash "lxc stop #{result}" do
+        user 'ubuntu'
+        group 'lxd'
+        cwd '/home/ubuntu'
+        not_if { `lxc list #{result} -c s -f csv` == "RUNNING" }
+        notifies :run, "bash[lxc delete #{result}]", :immediately
+        code "/snap/bin/lxc stop #{result}"
+    end
+
+    bash "lxc delete #{result}" do
+        user 'ubuntu'
+        group 'lxd'
+        cwd '/home/ubuntu'
+        action :nothing
+        code "/snap/bin/lxc delete #{result}"
+    end
+
+    file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
+        owner 'ubuntu'
+        group 'ubuntu'
+        action :delete
+    end
+
+    cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
+        owner 'ubuntu'
+        group 'ubuntu'
+        action :delete
+    end
+
+end
+
 #search(:classes, "uid:#{node[:hostname]}").each do |result|
 classes_data.each do |result|
 
@@ -55,12 +89,12 @@ classes_data.each do |result|
             #cont = `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv`
             #Chef::Log.info cont
             #if cont == '' then
-            if list_cont.include? "#{result['cid']}-#{result['uid']}" then
+            if launched_cont.include? "#{result['cid']}-#{result['uid']}" then
                 p "no container"
             end
         end
         #if `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv` == '' then
-        if list_cont.include? "#{result['cid']}-#{result['uid']}" then
+        if launched_cont.include? "#{result['cid']}-#{result['uid']}" then
             notifies :run, "bash[lxc init #{result['cid']}-#{result['uid']}]", :immediately
         end
     end
