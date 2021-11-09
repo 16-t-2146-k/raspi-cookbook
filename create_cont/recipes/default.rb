@@ -1,5 +1,16 @@
 server_data = data_bag_item('server', node[:hostname])
 classes_data = search(:classes, "uid:#{node[:hostname]}")
+unlist_cont = []
+
+ruby_block "check unlist container" do
+    block do
+        `/snap/bin/lxc list -c n -f csv`.each_line{|line|
+            unlist_cont.push(line.chomp)
+        }
+        Chef::Log.info "unlist_cont #{unlist_cont}"
+    end
+    action :run
+end
 
 #search(:classes, "uid:#{node[:hostname]}").each do |result|
 classes_data.each do |result|
@@ -9,7 +20,7 @@ classes_data.each do |result|
         _port = server_data['port'].shift
         server_data['used_port'].push(_port)
         result['port'] = _port
-        p _port
+        Chef::Log.info "#{result['cid']}-#{result['uid']} will use #{_port} port"
 
         #_ip = server_data['ip'].shift
         #server_data['used_ip'].push(_ip)
@@ -30,13 +41,13 @@ classes_data.each do |result|
 
     ruby_block "check container #{result['cid']}-#{result['uid']}" do
         block do
-            cont = `/snap/bin/lxc list --format json | jq '.[] | select(.name == \"#{result['cid']}-#{result['uid']}\") | {user:(.name),dist:.state.network.eth0.addresses[] | select(.family == \"inet\") | .address}'`
-            #Chef::Log.info cont
+            cont = `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv`
+            Chef::Log.info cont
             if cont == '' then
                 p "no container"
             end
         end
-        if `/snap/bin/lxc list --format json | jq '.[] | select(.name == \"#{result['cid']}-#{result['uid']}\") | {user:(.name),dist:.state.network.eth0.addresses[] | select(.family == \"inet\") | .address}'` == '' then
+        if `/snap/bin/lxc list #{result['cid']}-#{result['uid']} -c n -f csv` == '' then
             notifies :run, "bash[lxc init #{result['cid']}-#{result['uid']}]", :immediately
         end
     end
