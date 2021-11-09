@@ -3,10 +3,11 @@
 #databagの削除
 ruby_block "delete classes databag items" do
     block do
-        Chef::Log.info "item #{node['override_attributes']['delete_databag']['item']}"
+        #override_attributes
+        #Chef::Log.info "item #{node['delete_databag']['item']}"
         databag_item = Chef::DataBagItem.new
         databag_item.data_bag('classes')
-        databag_item.delete(node['override_attributes']['delete_databag']['item'])
+        databag_item.delete(node['delete_databag']['item'])
     end
     action :run
 end
