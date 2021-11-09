@@ -10,7 +10,7 @@ ruby_block "delete classes databag items" do
         databag_item = data_bag_item('classes', node['delete_databag']['item'])
         #Chef::Log.info databag_item
         #databag_item.load('classes',node['delete_databag']['item'])
-        databag_item.destroy(node['delete_databag']['item'])
+        databag_item.destroy()
     end
     action :run
 end
