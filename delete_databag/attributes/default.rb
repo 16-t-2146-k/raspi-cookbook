@@ -1,0 +1,1 @@
+default["delete_databag"]["databag"]["item"] = ""
