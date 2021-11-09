@@ -24,7 +24,7 @@ Chef::Log.info "unlist_cont #{unlist_cont}"
 unlist_cont.each do |result|
 
     Chef::Log.info "unlist_cont #{result}"
-    status = `/snap/bin/lxc list #{result} -c s -f csv`
+    status = `/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'`
     Chef::Log.info "status #{status}"
 
     bash "lxc stop #{result}" do
@@ -32,7 +32,8 @@ unlist_cont.each do |result|
         group 'lxd'
         cwd '/home/ubuntu'
         action :run
-        not_if { status == "STOPPED" }
+        only_if "/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'"
+        #only_if { status == "RUNNING" }
         code "/snap/bin/lxc stop #{result}"
     end
 
