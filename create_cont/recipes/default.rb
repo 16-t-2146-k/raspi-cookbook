@@ -29,7 +29,6 @@ unlist_cont.each do |result|
         cwd '/home/ubuntu'
         action :run
         not_if { `lxc list #{result} -c s -f csv` == "RUNNING" }
-        notifies :run, "bash[lxc delete #{result}]", :immediately
         code "/snap/bin/lxc stop #{result}"
     end
 
