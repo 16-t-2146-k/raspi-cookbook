@@ -23,6 +23,8 @@ Chef::Log.info "unlist_cont #{unlist_cont}"
 #databagに記載のないコンテナの停止(/削除)
 unlist_cont.each do |result|
 
+    Chef::Log.info "unlist_cont #{result}"
+
     bash "lxc stop #{result}" do
         user 'ubuntu'
         group 'lxd'
@@ -32,6 +34,7 @@ unlist_cont.each do |result|
         code "/snap/bin/lxc stop #{result}"
     end
 
+    #コンテナを停止に止めるならコメントアウト
     bash "lxc delete #{result}" do
         user 'ubuntu'
         group 'lxd'
