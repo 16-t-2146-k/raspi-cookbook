@@ -7,21 +7,18 @@ list_cont = []
 #databagに記載のないコンテナ
 unlist_cont = []
 
-ruby_block "check unlist container" do
-    block do
-        `/snap/bin/lxc list -c n -f csv`.each_line{|line|
-            launched_cont.push(line.chomp)
-        }
-        classes_data.each do |result|
-            list_cont.push(result['id'])
-        end
-        unlist_cont = launched_cont - list_cont
-        Chef::Log.info "launched_cont #{launched_cont}"
-        Chef::Log.info "list_cont #{list_cont}"
-        Chef::Log.info "unlist_cont #{unlist_cont}"
-    end
-    action :run
+
+`/snap/bin/lxc list -c n -f csv`.each_line{|line|
+    launched_cont.push(line.chomp)
+}
+classes_data.each do |result|
+    list_cont.push(result['id'])
 end
+unlist_cont = launched_cont - list_cont
+Chef::Log.info "launched_cont #{launched_cont}"
+Chef::Log.info "list_cont #{list_cont}"
+Chef::Log.info "unlist_cont #{unlist_cont}"
+
 
 #databagに記載のないコンテナの停止(/削除)
 unlist_cont.each do |result|
@@ -30,6 +27,7 @@ unlist_cont.each do |result|
         user 'ubuntu'
         group 'lxd'
         cwd '/home/ubuntu'
+        action :run
         not_if { `lxc list #{result} -c s -f csv` == "RUNNING" }
         notifies :run, "bash[lxc delete #{result}]", :immediately
         code "/snap/bin/lxc stop #{result}"
@@ -39,7 +37,7 @@ unlist_cont.each do |result|
         user 'ubuntu'
         group 'lxd'
         cwd '/home/ubuntu'
-        action :nothing
+        action :run
         code "/snap/bin/lxc delete #{result}"
     end
 
