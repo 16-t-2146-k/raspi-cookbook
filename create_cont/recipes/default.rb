@@ -55,7 +55,8 @@ classes_data.each do |result|
         group 'lxd'
         cwd '/home/ubuntu'
         action :nothing
-        notifies :run, "bash[lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1]", :immediately
+        notifies :run, "bash[lxc start #{result['cid']}-#{result['uid']}]", :immediately
+        #notifies :run, "bash[lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1]", :immediately
         code lazy {"/snap/bin/lxc config device add #{result['cid']}-#{result['uid']} http proxy listen=tcp:0.0.0.0:#{result['port']} connect=tcp:127.0.0.1:80 bind=host"}
     end
 
