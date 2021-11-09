@@ -100,7 +100,7 @@ bash "lxd remote add" do
     cwd '/home/ubuntu'
     action :nothing
     code "/snap/bin/lxc remote add chefserver https://chefserver:8443 --accept-certificate --password securitysecur"
-    notifies :run, 'bash[lxc profile edit default]', :immediately
+    #notifies :run, 'bash[lxc profile edit default]', :immediately
 end
 
 
