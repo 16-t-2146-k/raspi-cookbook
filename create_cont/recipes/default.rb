@@ -32,7 +32,7 @@ unlist_cont.each do |result|
         group 'lxd'
         cwd '/home/ubuntu'
         action :run
-        not_if { `/snap/bin/lxc list #{result} -c s -f csv` == "STOPPED" }
+        not_if { status == "STOPPED" }
         code "/snap/bin/lxc stop #{result}"
     end
 
