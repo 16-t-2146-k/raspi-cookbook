@@ -13,7 +13,7 @@ ruby_block "create classes databag items" do
             'cid' => node['create_databag']['item'],
             'port' => "",
         }
-        databag_item.save
+        databag_item.create
     end
     action :run
 end
