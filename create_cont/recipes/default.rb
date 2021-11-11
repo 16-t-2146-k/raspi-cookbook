@@ -1,3 +1,6 @@
+CWD = `echo ${HOME}`
+Chef::Log.info "cwd #{CWD}"
+
 ruby_block "run create_cont" do
     block do
 
