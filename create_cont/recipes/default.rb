@@ -1,4 +1,4 @@
-ruby_block "run create_cont cookbook" do
+ruby_block "run create_cont" do
     block do
 
         server_data = data_bag_item('server', node[:hostname])
@@ -10,8 +10,7 @@ ruby_block "run create_cont cookbook" do
         #databagに記載のないコンテナ
         unlist_cont = []
 
-
-        `/snap/bin/lxc list -c n -f csv`.each_line{|line|
+        shell_out("/snap/bin/lxc list -c n -f csv").stdout.each_line{|line|
             launched_cont.push(line.chomp)
         }
         classes_data.each do |result|
@@ -27,7 +26,7 @@ ruby_block "run create_cont cookbook" do
         unlist_cont.each do |result|
 
             Chef::Log.info "unlist_cont #{result}"
-            status = `/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'`
+            status = shell_out("usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'").stdout
             Chef::Log.info "status #{status}"
 
             bash "lxc stop #{result}" do
