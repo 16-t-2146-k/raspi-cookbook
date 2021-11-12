@@ -84,11 +84,21 @@ end
 #    action :create
 #end
 
-#snapで入れる場合パス通さないとダメかも
-bash 'snap install lxd' do
+#snapで入れる場合パス通さないとダメかも,not_if変えた方が良い
+bash 'snap install core' do
     user node["create_cont"]["user"]
     group 'root'
     action  :run
+    cwd node["create_cont"]["cwd"]
+    code "sudo snap install core"
+    not_if { File.exist?("/snap/bin/lxd") }
+    notifies :run, 'bash[snap install lxd]', :immediately
+end
+
+bash 'snap install lxd' do
+    user node["create_cont"]["user"]
+    group 'root'
+    action  :nothing
     cwd node["create_cont"]["cwd"]
     code "sudo snap install lxd"
     not_if { File.exist?("/snap/bin/lxd") }
