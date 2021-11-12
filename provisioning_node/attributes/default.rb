@@ -1,2 +1,2 @@
-node["create_cont"]["cwd"] = ""
-node["create_cont"]["user"] = ""
+default["create_cont"]["cwd"] = ""
+default["create_cont"]["user"] = ""
