@@ -4,11 +4,11 @@
 #if (!node["create_cont"]["cwd"]) then
 case node["platform"]
 when "debian"
-    node["create_cont"]["user"] = "pi"
-    node["create_cont"]["cwd"] = "/home/pi"
+    node.default["create_cont"]["user"] = "pi"
+    node.default["create_cont"]["cwd"] = "/home/pi"
 when "ubuntu"
-    node["create_cont"]["user"] = "ubuntu"
-    node["create_cont"]["cwd"] = "/home/ubuntu"
+    node.default["create_cont"]["user"] = "ubuntu"
+    node.default["create_cont"]["cwd"] = "/home/ubuntu"
 end
 
 ruby_block "run create_cont" do
