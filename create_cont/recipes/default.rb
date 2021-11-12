@@ -1,5 +1,15 @@
-CWD = `echo ${HOME}`
-Chef::Log.info "cwd #{CWD}"
+#CWD = `echo ${HOME}`
+#Chef::Log.info "cwd #{CWD}"
+
+#if (!node["create_cont"]["cwd"]) then
+case node["platform"]
+when "debian"
+    node["create_cont"]["user"] = "pi"
+    node["create_cont"]["cwd"] = "/home/pi"
+when "ubuntu"
+    node["create_cont"]["user"] = "ubuntu"
+    node["create_cont"]["cwd"] = "/home/ubuntu"
+end
 
 ruby_block "run create_cont" do
     block do
@@ -33,9 +43,9 @@ ruby_block "run create_cont" do
             Chef::Log.info "status #{status}"
 
             bash "lxc stop #{result}" do
-                user 'ubuntu'
+                user node["create_cont"]["user"]
                 group 'lxd'
-                cwd '/home/ubuntu'
+                cwd node["create_cont"]["cwd"]
                 action :run
                 only_if "/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'"
                 #only_if { status == "RUNNING" }
@@ -44,22 +54,22 @@ ruby_block "run create_cont" do
 
             #コンテナを停止に止めるならコメントアウト
             bash "lxc delete #{result}" do
-                user 'ubuntu'
+                user node["create_cont"]["user"]
                 group 'lxd'
-                cwd '/home/ubuntu'
+                cwd node["create_cont"]["cwd"]
                 action :run
                 code "/snap/bin/lxc delete #{result}"
             end
 
             file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
-                owner 'ubuntu'
-                group 'ubuntu'
+                owner node["create_cont"]["user"]
+                group node["create_cont"]["user"]
                 action :delete
             end
 
             cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
-                owner 'ubuntu'
-                group 'ubuntu'
+                owner node["create_cont"]["user"]
+                group node["create_cont"]["user"]
                 action :delete
             end
 
@@ -108,18 +118,18 @@ ruby_block "run create_cont" do
             end
 
             bash "lxc init #{result['cid']}-#{result['uid']}" do
-                user 'ubuntu'
+                user node["create_cont"]["user"]
                 group 'lxd'
-                cwd '/home/ubuntu'
+                cwd node["create_cont"]["cwd"]
                 action :nothing
                 notifies :run, "bash[lxc config device add #{result['cid']}-#{result['uid']} http proxy]", :immediately
                 code "/snap/bin/lxc init chefserver:#{result['cid']} #{result['cid']}-#{result['uid']}"
             end
 
             bash "lxc config device add #{result['cid']}-#{result['uid']} http proxy" do
-                user 'ubuntu'
+                user node["create_cont"]["user"]
                 group 'lxd'
-                cwd '/home/ubuntu'
+                cwd node["create_cont"]["cwd"]
                 action :nothing
                 notifies :run, "bash[lxc start #{result['cid']}-#{result['uid']}]", :immediately
                 #notifies :run, "bash[lxc network attach lxdbr0 #{result['cid']}-#{result['uid']} eth1]", :immediately
@@ -146,9 +156,9 @@ ruby_block "run create_cont" do
         #    end
 
             bash "lxc start #{result['cid']}-#{result['uid']}" do
-                user 'ubuntu'
+                user node["create_cont"]["user"]
                 group 'lxd'
-                cwd '/home/ubuntu'
+                cwd node["create_cont"]["cwd"]
                 action :nothing
                 code "/snap/bin/lxc start #{result['cid']}-#{result['uid']}"
             end
@@ -156,15 +166,15 @@ ruby_block "run create_cont" do
             file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
                 content lazy{"{\"ip\":\"\",\"port\":\"#{result['port']}\"}"}
                 mode '0755'
-                owner 'ubuntu'
-                group 'ubuntu'
+                owner node["create_cont"]["user"]
+                group node["create_cont"]["user"]
                 action :create
             end
 
             cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
                 source "#{result['cid']}.png"
-                owner 'ubuntu'
-                group 'ubuntu'
+                owner node["create_cont"]["user"]
+                group node["create_cont"]["user"]
                 mode '0755'
                 action :create
             end

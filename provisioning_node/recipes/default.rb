@@ -1,3 +1,14 @@
+#if (!node["create_cont"]["cwd"]) then
+case node["platform"]
+when "debian"
+    node["create_cont"]["user"] = "pi"
+    node["create_cont"]["cwd"] = "/home/pi"
+when "ubuntu"
+    node["create_cont"]["user"] = "ubuntu"
+    node["create_cont"]["cwd"] = "/home/ubuntu"
+end
+
+
 apt_update 'Update the apt' do
     action :update
 end
@@ -22,8 +33,8 @@ end
 
 directory "/tmp/chef" do
     mode   '0775'
-    owner 'ubuntu'
-    group 'ubuntu'
+    owner node["create_cont"]["user"]
+    group node["create_cont"]["user"]
     action :create
     not_if { File.exist?("/tmp/chef") }
 end
@@ -37,22 +48,22 @@ end
 #end
 
 directory '/home/ubuntu/rasapp/public/classes' do
-    owner 'ubuntu'
-    group 'ubuntu'
+    owner node["create_cont"]["user"]
+    group node["create_cont"]["user"]
     mode '0755'
     action :create
 end
 
 directory '/home/ubuntu/rasapp/public/classes/contents' do
-    owner 'ubuntu'
-    group 'ubuntu'
+    owner node["create_cont"]["user"]
+    group node["create_cont"]["user"]
     mode '0755'
     action :create
 end
 
 directory '/home/ubuntu/rasapp/public/classes/images' do
-    owner 'ubuntu'
-    group 'ubuntu'
+    owner node["create_cont"]["user"]
+    group node["create_cont"]["user"]
     mode '0755'
     action :create
 end
@@ -75,10 +86,10 @@ end
 
 #snapで入れる場合パス通さないとダメかも
 bash 'snap install lxd' do
-    user 'ubuntu'
+    user node["create_cont"]["user"]
     group 'root'
     action  :run
-    cwd '/home/ubuntu'
+    cwd node["create_cont"]["cwd"]
     code "sudo snap install lxd"
     not_if { File.exist?("/snap/bin/lxd") }
     notifies :run, 'bash[lxd init]', :immediately
@@ -86,18 +97,18 @@ end
 
 #userをlxdグループに入れないとroot以外は実行不可
 bash "lxd init" do
-    user 'ubuntu'
+    user node["create_cont"]["user"]
     group 'lxd'
-    cwd '/home/ubuntu'
+    cwd node["create_cont"]["cwd"]
     action :nothing
     code "/snap/bin/lxd init < /tmp/chef/lxd_init.txt"
     notifies :run, 'bash[lxd remote add]', :immediately
 end
 
 bash "lxd remote add" do
-    user 'ubuntu'
+    user node["create_cont"]["user"]
     group 'lxd'
-    cwd '/home/ubuntu'
+    cwd node["create_cont"]["cwd"]
     action :nothing
     code "/snap/bin/lxc remote add chefserver https://chefserver:8443 --accept-certificate --password securitysecur"
     #notifies :run, 'bash[lxc profile edit default]', :immediately
