@@ -20,62 +20,57 @@ list_cont = []
 #databagに記載のないコンテナ
 unlist_cont = []
 
-ruby_block "run create_cont" do
-    block do
 
-        shell_out("/snap/bin/lxc list -c n -f csv").stdout.each_line{|line|
-            launched_cont.push(line.chomp)
-        }
-        classes_data.each do |result|
-            list_cont.push(result['id'])
-        end
-        unlist_cont = launched_cont - list_cont
-        Chef::Log.info "launched_cont #{launched_cont}"
-        Chef::Log.info "list_cont #{list_cont}"
-        Chef::Log.info "unlist_cont #{unlist_cont}"
+shell_out("/snap/bin/lxc list -c n -f csv").stdout.each_line{|line|
+    launched_cont.push(line.chomp)
+}
+classes_data.each do |result|
+    list_cont.push(result['id'])
+end
+unlist_cont = launched_cont - list_cont
+Chef::Log.info "launched_cont #{launched_cont}"
+Chef::Log.info "list_cont #{list_cont}"
+Chef::Log.info "unlist_cont #{unlist_cont}"
 
 
-        #databagに記載のないコンテナの停止(/削除)
-        unlist_cont.each do |result|
+#databagに記載のないコンテナの停止(/削除)
+unlist_cont.each do |result|
 
-            Chef::Log.info "unlist_cont #{result}"
-            status = shell_out("usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'").stdout
-            Chef::Log.info "status #{status}"
+    Chef::Log.info "unlist_cont #{result}"
+    status = shell_out("usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'").stdout
+    Chef::Log.info "status #{status}"
 
-            bash "lxc stop #{result}" do
-                user node["create_cont"]["user"]
-                group 'lxd'
-                cwd node["create_cont"]["cwd"]
-                action :run
-                only_if "/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'"
-                #only_if { status == "RUNNING" }
-                code "/snap/bin/lxc stop #{result}"
-            end
-
-            #コンテナを停止に止めるならコメントアウト
-            bash "lxc delete #{result}" do
-                user node["create_cont"]["user"]
-                group 'lxd'
-                cwd node["create_cont"]["cwd"]
-                action :run
-                code "/snap/bin/lxc delete #{result}"
-            end
-
-            file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/contents/#{result['cid']}.json" do
-                owner node["create_cont"]["user"]
-                group node["create_cont"]["user"]
-                action :delete
-            end
-
-            cookbook_file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
-                owner node["create_cont"]["user"]
-                group node["create_cont"]["user"]
-                action :delete
-            end
-
-        end
+    bash "lxc stop #{result}" do
+        user node["create_cont"]["user"]
+        group 'lxd'
+        cwd node["create_cont"]["cwd"]
+        action :run
+        only_if "/usr/bin/test $(/snap/bin/lxc list #{result} -c s -f csv) = 'RUNNING'"
+        #only_if { status == "RUNNING" }
+        code "/snap/bin/lxc stop #{result}"
     end
-    action :run
+
+    #コンテナを停止に止めるならコメントアウト
+    bash "lxc delete #{result}" do
+        user node["create_cont"]["user"]
+        group 'lxd'
+        cwd node["create_cont"]["cwd"]
+        action :run
+        code "/snap/bin/lxc delete #{result}"
+    end
+
+    file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/contents/#{result['cid']}.json" do
+        owner node["create_cont"]["user"]
+        group node["create_cont"]["user"]
+        action :delete
+    end
+
+    cookbook_file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
+        owner node["create_cont"]["user"]
+        group node["create_cont"]["user"]
+        action :delete
+    end
+
 end
 
 #search(:classes, "uid:#{node[:hostname]}").each do |result|
