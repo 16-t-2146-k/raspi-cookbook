@@ -105,7 +105,7 @@ bash 'snap install lxd' do
     notifies :run, 'bash[lxd init]', :immediately
 end
 
-#userをlxdグループに入れないとroot以外は実行不可
+#userをlxdグループに入れないとroot以外は実行不可(sudo gpasswd -a pi lxd)
 bash "lxd init" do
     user node["create_cont"]["user"]
     group 'lxd'
