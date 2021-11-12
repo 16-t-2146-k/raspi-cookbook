@@ -47,21 +47,21 @@ end
 #  action :sync
 #end
 
-directory '/home/ubuntu/rasapp/public/classes' do
+directory "#{node["create_cont"]["cwd"]}/rasapp/public/classes" do
     owner node["create_cont"]["user"]
     group node["create_cont"]["user"]
     mode '0755'
     action :create
 end
 
-directory '/home/ubuntu/rasapp/public/classes/contents' do
+directory "#{node["create_cont"]["cwd"]}/rasapp/public/classes/contents" do
     owner node["create_cont"]["user"]
     group node["create_cont"]["user"]
     mode '0755'
     action :create
 end
 
-directory '/home/ubuntu/rasapp/public/classes/images' do
+directory "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images" do
     owner node["create_cont"]["user"]
     group node["create_cont"]["user"]
     mode '0755'

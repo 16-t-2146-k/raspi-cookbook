@@ -61,13 +61,13 @@ ruby_block "run create_cont" do
                 code "/snap/bin/lxc delete #{result}"
             end
 
-            file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
+            file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/contents/#{result['cid']}.json" do
                 owner node["create_cont"]["user"]
                 group node["create_cont"]["user"]
                 action :delete
             end
 
-            cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
+            cookbook_file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
                 owner node["create_cont"]["user"]
                 group node["create_cont"]["user"]
                 action :delete
@@ -163,7 +163,7 @@ ruby_block "run create_cont" do
                 code "/snap/bin/lxc start #{result['cid']}-#{result['uid']}"
             end
 
-            file "/home/ubuntu/rasapp/public/classes/contents/#{result['cid']}.json" do
+            file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/contents/#{result['cid']}.json" do
                 content lazy{"{\"ip\":\"\",\"port\":\"#{result['port']}\"}"}
                 mode '0755'
                 owner node["create_cont"]["user"]
@@ -171,7 +171,7 @@ ruby_block "run create_cont" do
                 action :create
             end
 
-            cookbook_file "/home/ubuntu/rasapp/public/classes/images/#{result['cid']}.png" do
+            cookbook_file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
                 source "#{result['cid']}.png"
                 owner node["create_cont"]["user"]
                 group node["create_cont"]["user"]
