@@ -65,7 +65,7 @@ unlist_cont.each do |result|
         action :delete
     end
 
-    cookbook_file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
+    file "#{node["create_cont"]["cwd"]}/rasapp/public/classes/images/#{result['cid']}.png" do
         owner node["create_cont"]["user"]
         group node["create_cont"]["user"]
         action :delete
@@ -85,7 +85,7 @@ classes_data.each do |result|
 
         #_ip = server_data['ip'].shift
         #server_data['used_ip'].push(_ip)
-        #result['ip'] = _ip        
+        #result['ip'] = _ip
         #p _ip
 
         databag_item = Chef::DataBagItem.new

@@ -112,14 +112,15 @@ bash "lxd init" do
     cwd node["create_cont"]["cwd"]
     action :nothing
     code "/snap/bin/lxd init < /tmp/chef/lxd_init.txt"
-    notifies :run, 'bash[lxd remote add]', :immediately
+    #notifies :run, 'bash[lxd remote add]', :immediately
 end
 
 bash "lxd remote add" do
     user node["create_cont"]["user"]
     group 'lxd'
     cwd node["create_cont"]["cwd"]
-    action :nothing
+    ignore_failure true
+    action :run
     code "/snap/bin/lxc remote add chefserver https://chefserver:8443 --accept-certificate --password securitysecur"
     #notifies :run, 'bash[lxc profile edit default]', :immediately
 end
