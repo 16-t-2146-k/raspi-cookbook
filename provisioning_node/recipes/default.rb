@@ -121,7 +121,7 @@ bash "lxd remote add" do
     cwd node["create_cont"]["cwd"]
     ignore_failure true
     action :run
-    code "/snap/bin/lxc remote add chefserver https://chefserver:8443 --accept-certificate --password securitysecur"
+    code "sudo /snap/bin/lxc remote add chefserver https://chefserver:8443 --accept-certificate --password securitysecur"
     #notifies :run, 'bash[lxc profile edit default]', :immediately
 end
 
