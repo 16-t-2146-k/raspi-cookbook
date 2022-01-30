@@ -4,8 +4,8 @@ when "debian"
     node.default["create_cont"]["user"] = "pi"
     node.default["create_cont"]["cwd"] = "/home/pi"
 when "ubuntu"
-    node.default["create_cont"]["user"] = "ubuntu"
-    node.default["create_cont"]["cwd"] = "/home/ubuntu"
+    node.default["create_cont"]["user"] = "vagrant"
+    node.default["create_cont"]["cwd"] = "/home/vagrant"
 end
 
 
