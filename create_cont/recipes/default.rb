@@ -7,9 +7,11 @@ case node["platform"]
 when "debian"
     node.default["create_cont"]["user"] = "pi"
     node.default["create_cont"]["cwd"] = "/home/pi"
+    node.default["create_cont"]["arch"] = "aarch64"
 when "ubuntu"
     node.default["create_cont"]["user"] = "vagrant"
     node.default["create_cont"]["cwd"] = "/home/vagrant"
+    node.default["create_cont"]["arch"] = "x64"
 end
 
 server_data = data_bag_item('server', node[:hostname])
