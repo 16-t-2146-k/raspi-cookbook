@@ -131,7 +131,7 @@ ruby_block "setup container stage" do
                 cwd node["create_cont"]["cwd"]
                 action :nothing
                 notifies :run, "bash[lxc config device add #{result['cid']}-#{result['uid']} http proxy]", :immediately
-                code "/snap/bin/lxc init chefserver:#{result['cid']} #{result['cid']}-#{result['uid']}"
+                code "/snap/bin/lxc init chefserver:#{node["platform"]}-#{result['cid']} #{result['cid']}-#{result['uid']}"
             end
 
             recipe.bash "lxc config device add #{result['cid']}-#{result['uid']} http proxy" do
